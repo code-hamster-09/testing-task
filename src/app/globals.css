@@ -1,4 +1,48 @@
-﻿
-
-/* Tailwind layers */
+﻿/* Tailwind layers */
 @import "tailwindcss";
+
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+.swiper-button-next,
+.swiper-button-prev {
+  --swiper-navigation-size: 32px; /* переменная */
+  color: #1d4ed8; /* tailwind blue-600 */
+  background: transparent;
+  border-radius: 8px;
+}
+
+.swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: #cbd5e1; /* gray-300 */
+  opacity: 1;
+  transition: all 0.25s ease;
+}
+.swiper-pagination-bullet.swiper-pagination-bullet-active {
+  width: 20px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #1d4ed8; /* blue-600 */
+}
+
+/* Стиль только для твоего слайдера */
+.swiper {
+  padding-bottom: 2.5rem !important; /* оставляем место под точки */
+}
+
+.my-swiper .swiper-pagination {
+  bottom: 0.5rem !important;   /* подвинь это значение, если нужно ниже/выше */
+  display: flex;
+  justify-content: center;
+  z-index: 40;
+}
+
+.swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+@media (min-width: 1024px) {
+  .swiper-slide .card { width: 20rem; }
+}

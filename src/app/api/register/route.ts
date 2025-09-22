@@ -1,28 +1,70 @@
-import { NextResponse } from "next/server"
-import bcrypt from "bcryptjs"
-import db from "@/lib/db"
-import { createContact } from "@/lib/bitrix"
+import { createContact } from "@/lib/bitrix";
+import db from "@/lib/db";
+import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { login, email, password } = await req.json()
+    const { login, email, password } = await req.json();
 
-    // Хешируем пароль
-    const hashed = bcrypt.hashSync(password, 10)
+    if (!login || !email || !password) {
+      return NextResponse.json(
+        { errors: { general: "Неверные данные" } },
+        { status: 400 }
+      );
+    }
 
-    // Добавляем в SQLite
-    db.prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)")
-      .run(login, email, hashed)
+    const hashed = bcrypt.hashSync(password, 10);
 
-    // Добавляем контакт в Bitrix
-    await createContact({ name: login, email })
+    // create contact in bitrix and get contact id
+    let bitrixContactId: number | null = null;
+    try {
+      const createResp = await createContact({ name: login, email });
+      bitrixContactId = createResp?.result ?? null;
+    } catch (err) {
+      console.error("Bitrix error:", err);
+      return NextResponse.json(
+        { errors: { bitrix: "Ошибка при создании контакта в Bitrix" } },
+        { status: 500 }
+      );
+    }
 
-    return NextResponse.json({ message: "Пользователь создан" })
-  } catch (err: unknown) {
-    console.error(err)
+    // save user to DB
+    try {
+      const stmt = db.prepare(
+        "INSERT INTO users (name, email, password, bitrix_contact_id) VALUES (?, ?, ?, ?)"
+      );
+      const info = stmt.run(login, email, hashed, bitrixContactId);
+      return NextResponse.json({
+        message: "Пользователь создан",
+        userId: info.lastInsertRowid,
+      });
+    } catch (dbErr: unknown) {
+      console.error("DB insert error:", dbErr);
+
+      const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
+
+      if (
+        msg.includes("UNIQUE") ||
+        msg.includes("constraint") ||
+        msg.includes("already")
+      ) {
+        return NextResponse.json(
+          { errors: { email: "Этот email уже занят" } },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json(
+        { errors: { db: "Ошибка базы данных" } },
+        { status: 500 }
+      );
+    }
+  } catch (err) {
+    console.error(err);
     return NextResponse.json(
-      { errors: { email: "Этот email уже занят или ошибка сервера" } },
-      { status: 400 }
-    )
+      { errors: { general: "Ошибка сервера" } },
+      { status: 500 }
+    );
   }
 }

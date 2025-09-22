@@ -1,16 +1,49 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Eye, EyeOff } from "lucide-react"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(
+          data.errors.general || data.errors.email || data.errors.password
+        );
+      } else {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        router.push("/dashboard"); // редирект на дашборд после успешного входа
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Ошибка сервера");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -20,7 +53,7 @@ export default function LoginPage() {
           <h2 className="text-xl font-medium text-black mb-8">Вход</h2>
         </div>
 
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleLogin}>
           <div>
             <Label htmlFor="email" className="text-sm font-medium text-black">
               Email
@@ -36,7 +69,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <Label htmlFor="password" className="text-sm font-medium text-black">
+            <Label
+              htmlFor="password"
+              className="text-sm font-medium text-black"
+            >
               Пароль
             </Label>
             <div className="relative mt-1">
@@ -56,10 +92,15 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
 
-          <Button type="submit" className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">
-            Вход
+          <Button
+            type="submit"
+            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
+            disabled={loading}
+          >
+            {loading ? "Входим..." : "Вход"}
           </Button>
 
           <div className="text-center">
@@ -67,12 +108,15 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center">
-            <Link href="/register" className="text-blue-400 hover:text-blue-500 font-medium">
+            <Link
+              href="/register"
+              className="text-blue-400 hover:text-blue-500 font-medium"
+            >
               Регистрация
             </Link>
           </div>
         </form>
       </div>
     </div>
-  )
+  );
 }
