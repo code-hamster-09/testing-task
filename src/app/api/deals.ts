@@ -1,22 +1,60 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { getDeals, createDeal } from "@/lib/bitrix";
+// src/app/api/deals/route.ts
+import { NextResponse } from "next/server";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === "GET") {
-    const contactId = req.query.contactId ? Number(req.query.contactId) : undefined;
-    const deals = await getDeals(contactId);
-    return res.status(200).json(deals);
+const WEBHOOK = process.env.BITRIX_WEBHOOK_URL; // server-only
+
+if (!WEBHOOK) {
+  console.error("BITRIX_WEBHOOK_URL not set on server");
+}
+
+type Deal = {
+  ID: number;
+  TITLE: string;
+  DATE_CREATE: string;
+  STAGE_ID: string;
+};
+
+export async function GET(req: Request) {
+  if (!WEBHOOK) return NextResponse.json({ error: "BITRIX_WEBHOOK_URL not set" }, { status: 500 });
+
+  // optional contactId query param
+  const urlObj = new URL(req.url);
+  const contactId = urlObj.searchParams.get("contactId");
+
+  let url = `${WEBHOOK}/crm.deal.list.json?select[]=ID&select[]=TITLE&select[]=DATE_CREATE&select[]=STAGE_ID`;
+  if (contactId) {
+    url += `&filter[CONTACT_ID]=${encodeURIComponent(contactId)}`;
   }
 
-  if (req.method === "POST") {
-    const { title, contactId } = req.body;
-    if (!title || typeof contactId !== "number") {
-      return res.status(400).json({ error: "Missing title or contactId" });
-    }
-    const id = await createDeal(title, contactId);
-    return res.status(201).json({ id });
+  const res = await fetch(url);
+  const data = await res.json();
+
+  const result: Deal[] = Array.isArray(data?.result) ? data.result : (data.result ?? []);
+  return NextResponse.json(result);
+}
+
+export async function POST(req: Request) {
+  if (!WEBHOOK) return NextResponse.json({ error: "BITRIX_WEBHOOK_URL not set" }, { status: 500 });
+
+  const body = await req.json().catch(() => ({}));
+  const title = typeof body?.title === "string" ? body.title : "";
+  const contactId = typeof body?.contactId === "number" ? body.contactId : Number(body?.contactId);
+
+  if (!title || !contactId) {
+    return NextResponse.json({ error: "Missing title or contactId" }, { status: 400 });
   }
 
-  res.setHeader("Allow", "GET, POST");
-  res.status(405).end();
+  const r = await fetch(`${WEBHOOK}/crm.deal.add.json`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fields: {
+        TITLE: title,
+        CONTACT_ID: contactId,
+      },
+    }),
+  });
+
+  const data = await r.json();
+  return NextResponse.json(data);
 }
