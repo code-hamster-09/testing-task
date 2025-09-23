@@ -65,6 +65,7 @@ export default function RegisterPage() {
     return errs;
   };
 
+  // re-validate on data at every change
   useEffect(() => {
     setErrors(getErrors(formData));
   }, [formData]);
@@ -77,12 +78,14 @@ export default function RegisterPage() {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
+  // check if all fields are filled and has no errors
   const allFilled = Object.values(formData).every((v) => v.trim() !== "");
   const hasErrors = Object.keys(errors).length > 0;
   const isValid = allFilled && !hasErrors;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // mark all as touched to show errors
     setTouched({
       login: true,
       email: true,
@@ -90,6 +93,7 @@ export default function RegisterPage() {
       confirmPassword: true,
     });
 
+    // final validation
     const currentErrors = getErrors(formData);
     setErrors(currentErrors);
     if (Object.keys(currentErrors).length > 0) return;
@@ -102,11 +106,13 @@ export default function RegisterPage() {
         body: JSON.stringify(formData),
       });
 
+      // parsing response json
       let data: { errors?: FormErrors } = {};
       try {
         data = await res.json();
       } catch {}
 
+      // reset form or show errors, if success redirect to dashboard, else show error
       if (res.ok) {
         setFormData({ login: "", email: "", password: "", confirmPassword: "" });
         setTouched({ login: false, email: false, password: false, confirmPassword: false });

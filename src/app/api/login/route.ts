@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import db from "@/lib/db";
 
+// types
 type DbUser = {
   id: number;
   name: string;
@@ -17,6 +18,7 @@ export async function POST(req: Request) {
     const email = typeof body?.email === "string" ? body.email.trim() : "";
     const password = typeof body?.password === "string" ? body.password : "";
 
+    // basic validation
     if (!email || !password) {
       return NextResponse.json(
         { errors: { general: "Введите email и пароль" } },

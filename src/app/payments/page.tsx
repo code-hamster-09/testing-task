@@ -72,7 +72,7 @@ export default function PaymentsPage() {
     },
   ];
 
-  // const filteredPayments = payments.filter((payment) =>)
+  // const filteredPayments = payments.filter((payment) => {})
 
   return (
     <div className="min-h-screen bg-gray-50">

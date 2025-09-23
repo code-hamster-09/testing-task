@@ -7,6 +7,7 @@ if (!WEBHOOK_URL) {
 export const createContact = async (user: { name: string; email: string }) => {
   if (!WEBHOOK_URL) throw new Error("BITRIX_WEBHOOK_URL не задан в .env.local");
 
+  // create contact in bitrix calling crm.contact.add.json
   const res = await fetch(`${WEBHOOK_URL}/crm.contact.add.json`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -24,6 +25,8 @@ export const createContact = async (user: { name: string; email: string }) => {
   return data;
 };
 
+
+// deal type
 export type Deal = {
   ID: number;
   TITLE: string;
@@ -31,11 +34,14 @@ export type Deal = {
   STAGE_ID: string;
 };
 
+
+// fetch deals from bitrix, optionally filtering by contactId
 export async function getDeals(contactId?: number): Promise<Deal[]> {
   if (!WEBHOOK_URL) throw new Error("BITRIX_WEBHOOK_URL not set");
 
   let url = `${WEBHOOK_URL}/crm.deal.list.json?select[]=ID&select[]=TITLE&select[]=DATE_CREATE&select[]=STAGE_ID`;
 
+  // if contactId provided, add filter
   if (typeof contactId === "number") {
     url += `&filter[CONTACT_ID]=${contactId}`;
   }
@@ -43,12 +49,15 @@ export async function getDeals(contactId?: number): Promise<Deal[]> {
   const res = await fetch(url);
   const data = await res.json();
 
+  // return array of deals, else empty array
+  // "??" - nullish coalescing operator, it is for cases when result may be null/undefined
   return Array.isArray(data?.result) ? data.result : (data.result ?? []);
 }
 
 export async function createDeal(title: string, contactId: number) {
   if (!WEBHOOK_URL) throw new Error("BITRIX_WEBHOOK_URL not set");
 
+  // create deal in bitrix calling crm.deal.add.json
   const res = await fetch(`${WEBHOOK_URL}/crm.deal.add.json`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

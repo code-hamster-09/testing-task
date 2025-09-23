@@ -5,6 +5,7 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
+// types
 type Deal = {
   ID: number;
   TITLE: string;
@@ -18,7 +19,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // читаем локального пользователя (как ты делал ранее)
+    // reading local user
     const userStr = typeof window !== "undefined" ? localStorage.getItem("user") : null;
     if (userStr) {
       try {
@@ -29,7 +30,7 @@ export default function OrdersPage() {
         console.error("invalid user in localStorage", e);
       }
     } else {
-      // если нет user — можно загрузить все сделки или ничего. Здесь — загружаем все (без фильтра)
+      // if no user, load al deals or none
       fetchDeals();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -41,6 +42,7 @@ export default function OrdersPage() {
       const url = contactId ? `/api/deals?contactId=${contactId}` : `/api/deals`;
       const res = await fetch(url);
       const data = await res.json();
+      // if data is array, set it, else empty array
       setDeals(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Failed to load deals", e);
@@ -50,6 +52,7 @@ export default function OrdersPage() {
     }
   };
 
+  // function to repeat a deal
   const handleRepeat = async (deal: Deal) => {
     if (!user?.bitrix_contact_id) return;
     setLoading(true);

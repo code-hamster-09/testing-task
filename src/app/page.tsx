@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
+  // router for navigation
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -16,10 +17,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // login handler
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+    // call login api
     try {
       const res = await fetch("/api/login", {
         method: "POST",
@@ -27,15 +30,17 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
+      // parse response json
       const data = await res.json();
 
+      // if not ok, show error, else save user and redirect
       if (!res.ok) {
         setError(
           data.errors.general || data.errors.email || data.errors.password
         );
       } else {
         localStorage.setItem("user", JSON.stringify(data.user));
-        router.push("/dashboard"); // редирект на дашборд после успешного входа
+        router.push("/dashboard"); // redirect to dashboard
       }
     } catch (err) {
       console.error(err);
