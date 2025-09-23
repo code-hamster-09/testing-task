@@ -9,13 +9,13 @@ export default function BroadcastPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="p-4 md:p-6 max-w-4xl mx-auto">
+      <div className="p-4 md:p-6 max-w-4xl mx-auto mb-20 md:mb-0">
         <h1 className="text-2xl md:text-3xl font-bold text-black mb-8">
           Трансляция
         </h1>
 
         <Card className="bg-white border border-gray-200 shadow-sm">
-          <CardContent className="p-6">
+          <CardContent className="sm:p-6 p-3">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-black">
                 Прямая трансляция

@@ -46,7 +46,7 @@ export default function OrdersPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="p-4 md:p-6 max-w-auto mx-auto">
+      <div className="p-4 md:p-6 max-w-auto mx-auto mb-20 md:mb-0">
         <h1 className="text-2xl md:text-3xl font-bold text-black mb-8">
           Заказы
         </h1>

@@ -235,10 +235,10 @@ export default function DashboardPage() {
                 {payments.map((p) => (
                   <div
                     key={p.id}
-                    className="grid grid-cols-1 md:grid-cols-18 gap-4 items-center py-3 border-b border-gray-300 md:border-gray-200 last:border-b-0"
+                    className="grid grid-cols-2 md:grid-cols-18 gap-4 items-center py-3 border-b border-gray-300 md:border-gray-200 last:border-b-0"
                   >
                     {/* User Info */}
-                    <div className="flex items-center space-x-3 col-span-6">
+                    <div className="flex items-center space-x-3 md:col-span-6">
                       <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
                         <div className="w-6 h-6 bg-gray-400 rounded-full"></div>
                       </div>
@@ -251,7 +251,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Status */}
-                    <div className="flex md:justify-start col-span-4 font-medium">
+                    <div className="flex md:justify-start md:col-span-4 font-medium justify-end sm:m-0 mb-auto">
                       <span
                         className={`inline-flex items-center px-2 py-1 text-xs rounded-full ${
                           p.status === "paid"
@@ -269,7 +269,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Progress */}
-                    <div className="flex items-center space-x-2 col-span-6">
+                    <div className="flex items-center space-x-2 md:col-span-6">
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-green-500 h-2 rounded-full"
@@ -282,7 +282,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Action */}
-                    <div className="flex md:justify-start col-span-2">
+                    <div className="flex md:justify-start md:col-span-2 justify-end">
                       <Button
                         size="sm"
                         className="bg-transparent hover:text-blue-700 text-blue-500 text-sm cursor-pointer m-0 p-0"

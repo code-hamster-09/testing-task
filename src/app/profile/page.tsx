@@ -28,7 +28,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="p-4 md:p-6 max-w-4xl mx-auto">
+      <div className="p-4 md:p-6 max-w-4xl mx-auto mb-20 md:mb-0">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="p-6">
             <h1 className="text-2xl font-bold text-black border-l-4 border-blue-600 pl-3 mb-8">

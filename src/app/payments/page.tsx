@@ -78,7 +78,7 @@ export default function PaymentsPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="p-4 md:p-6 max-w-auto mx-auto">
+      <div className="p-4 md:p-6 max-w-auto mx-auto mb-20 md:mb-0">
         <div className="flex w-full items-center justify-between">
           <h1 className="text-2xl md:text-3xl font-bold text-black mb-8">
             Платежи

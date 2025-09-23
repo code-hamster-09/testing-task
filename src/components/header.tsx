@@ -67,14 +67,14 @@ export function Header() {
           <Link href="/dashboard" className="text-lg font-bold text-black">
             ЛОГОТИП
           </Link>
-          <Button
+          {/* <Button
             variant="ghost"
             size="sm"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </Button>
+          </Button> */}
         </div>
 
         {/* Mobile Menu Overlay */}
