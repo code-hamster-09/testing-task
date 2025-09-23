@@ -15,7 +15,7 @@ export default function ProfilePage() {
     address: "Адрес",
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, _setErrors] = useState({
     name: "Неправильное поле ввода",
     email: "",
     phone: "",
