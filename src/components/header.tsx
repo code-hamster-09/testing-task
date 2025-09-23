@@ -1,15 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
   CreditCard,
   LayoutDashboard,
-  Menu,
   Radio,
   User,
-  X,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -36,7 +33,7 @@ export function Header() {
             <Link href="/dashboard" className="text-lg font-bold text-black">
               ЛОГОТИП
             </Link>
-          </div>  
+          </div>
 
           <div className="flex space-x-1">
             {navigation.map((item) => {
