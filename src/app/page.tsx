@@ -1,3 +1,4 @@
+// src/app/login/page.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
-  // router for navigation
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -17,30 +17,23 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // login handler
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    // call login api
     try {
       const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
-      // parse response json
-      const data = await res.json();
-
-      // if not ok, show error, else save user and redirect
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(
-          data.errors.general || data.errors.email || data.errors.password
-        );
+        setError(data.errors?.general || data.errors?.email || data.errors?.password || "Ошибка входа");
       } else {
+        // сохраняем минимальный объект пользователя в localStorage
         localStorage.setItem("user", JSON.stringify(data.user));
-        router.push("/dashboard"); // redirect to dashboard
+        router.push("/dashboard");
       }
     } catch (err) {
       console.error(err);
@@ -60,51 +53,22 @@ export default function LoginPage() {
 
         <form className="space-y-6" onSubmit={handleLogin}>
           <div>
-            <Label htmlFor="email" className="text-sm font-medium text-black">
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              className="mt-1 h-12 border-gray-300 rounded-lg"
-            />
+            <Label htmlFor="email" className="text-sm font-medium text-black">Email</Label>
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="mt-1 h-12 border-gray-300 rounded-lg" />
           </div>
 
           <div>
-            <Label
-              htmlFor="password"
-              className="text-sm font-medium text-black"
-            >
-              Пароль
-            </Label>
+            <Label htmlFor="password" className="text-sm font-medium text-black">Пароль</Label>
             <div className="relative mt-1">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••••••••"
-                className="h-12 border-gray-300 rounded-lg pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-              >
+              <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••" className="h-12 border-gray-300 rounded-lg pr-10" />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
 
-          <Button
-            type="submit"
-            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
-            disabled={loading}
-          >
+          <Button type="submit" className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg" disabled={loading}>
             {loading ? "Входим..." : "Вход"}
           </Button>
 
@@ -113,12 +77,7 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center">
-            <Link
-              href="/register"
-              className="text-blue-400 hover:text-blue-500 font-medium"
-            >
-              Регистрация
-            </Link>
+            <Link href="/register" className="text-blue-400 hover:text-blue-500 font-medium">Регистрация</Link>
           </div>
         </form>
       </div>

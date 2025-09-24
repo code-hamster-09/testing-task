@@ -5,6 +5,10 @@
 @import "swiper/css/navigation";
 @import "swiper/css/pagination";
 
+button:disabled, a:disabled {
+  cursor: not-allowed;
+}
+
 .swiper-button-next,
 .swiper-button-prev {
   --swiper-navigation-size: 32px; /* переменная */

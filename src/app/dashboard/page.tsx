@@ -7,9 +7,21 @@ import { ChevronDown, Download } from "lucide-react";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+
+// types
+type ApiUser = {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string | null;
+  address?: string | null;
+};
 
 export default function DashboardPage() {
   const orders = [
@@ -48,6 +60,82 @@ export default function DashboardPage() {
     },
   ];
 
+  const [user, setUser] = useState<ApiUser | null>(null);
+  const [form, setForm] = useState<Partial<ApiUser> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (!stored) {
+      setError(
+        "Нет сохранённого пользователя (localStorage). Войдите, чтобы увидеть профиль."
+      );
+      setLoading(false);
+      return;
+    }
+
+    let parsed: unknown = {};
+    try {
+      parsed = JSON.parse(stored);
+    } catch {
+      setError("Ошибка парсинга localStorage.user");
+      setLoading(false);
+      return;
+    }
+
+    const id =
+      typeof parsed === "object" && parsed !== null && "id" in (parsed as any)
+        ? Number((parsed as any).id)
+        : NaN;
+    if (!id || Number.isNaN(id)) {
+      setError("В localStorage.user нет корректного id");
+      setLoading(false);
+      return;
+    }
+
+    fetch(`/api/profile?id=${id}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          const json = await res.json().catch(() => ({}));
+          throw new Error(json?.error ?? `HTTP ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((json) => {
+        setUser(json.data);
+        setForm(json.data);
+      })
+      .catch((e) => {
+        console.error("Ошибка загрузки профиля:", e);
+        setError(String(e?.message ?? e));
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const save = async () => {
+    if (!form?.id) return;
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j?.error ?? `HTTP ${res.status}`);
+      }
+      const j = await res.json();
+      setUser(j.data);
+      setForm(j.data);
+      setIsEditing(false);
+    } catch (e) {
+      console.error("Ошибка сохранения:", e);
+      setError(String(e?.message ?? e));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
       <Header />
@@ -56,11 +144,8 @@ export default function DashboardPage() {
         {/* Welcome Section */}
         <div className="mb-6 md:mb-8">
           <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-black mb-2">
-            Привет, Алим
+            Привет, {user?.name ?? "User"} 👋
           </h1>
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-black">
-            Джолдаспаев 👋
-          </h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6 ">
@@ -102,7 +187,7 @@ export default function DashboardPage() {
                         </p>
                         <Button
                           size="sm"
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm mt-auto"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm mt-auto cursor-pointer"
                         >
                           <Download size={14} className="mr-1 md:mr-2" />
                           Скачать
@@ -117,67 +202,120 @@ export default function DashboardPage() {
 
           {/* Profile Section */}
           <Card className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
-            <CardContent className="p-4 md:p-6">
-              <h3 className="text-base md:text-lg font-semibold text-black border-l-4 border-blue-600 pl-3 mb-4 md:mb-6">
+            <div className="p-6">
+              <h1 className="text-xl font-medium text-black border-l-4 border-blue-600 pl-3 mb-4">
                 Профиль
-              </h3>
+              </h1>
 
-              <div className="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-6">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-200 rounded-full flex items-center justify-center border-4 border-blue-600 mx-auto md:mx-0 flex-shrink-0">
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-400 rounded-full"></div>
+              {/* Форма */}
+              {loading ? (
+                <div>Загрузка</div>
+              ) : (
+                <div className="flex flex-col md:flex-row md:items-start md:space-x-8">
+                  {/* Аватар */}
+                  <div className="flex-shrink-0 mb-6 md:mb-0">
+                    <div className="w-32 h-32 lg:w-16 lg:h-16 bg-gray-200 rounded-full flex items-center justify-center border-4 lg:border-3 border-blue-600">
+                      <div className="lg:w-12 lg:h-12 w-16 h-16 bg-gray-400 rounded-full"></div>
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <Label
+                        htmlFor="name"
+                        className="text-sm font-medium text-black"
+                      >
+                        Имя
+                      </Label>
+                      <Input
+                        id="login"
+                        type="text"
+                        value={form?.name ?? ""}
+                        onChange={(e) =>
+                          setForm((p) => ({
+                            ...(p ?? {}),
+                            name: e.target.value,
+                          }))
+                        }
+                        className="mt-1 h-10 border-gray-300 rounded-lg"
+                        readOnly
+                      />
+                    </div>
+
+                    <div>
+                      <Label
+                        htmlFor="email"
+                        className="text-sm font-medium text-black"
+                      >
+                        Email
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={form?.email ?? ""}
+                        onChange={(e) =>
+                          setForm((p) => ({
+                            ...(p ?? {}),
+                            email: e.target.value,
+                          }))
+                        }
+                        className="mt-1 h-10 border-gray-300 rounded-lg"
+                        readOnly
+                      />
+                    </div>
+
+                    <div>
+                      <Label
+                        htmlFor="phone"
+                        className="text-sm font-medium text-black"
+                      >
+                        Телефон
+                      </Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={form?.phone ?? ""}
+                        placeholder="+7 (999) 999-99-99"
+                        onChange={(e) =>
+                          setForm((p) => ({
+                            ...(p ?? {}),
+                            phone: e.target.value,
+                          }))
+                        }
+                        className="mt-1 h-10 border-gray-300 rounded-lg"
+                        readOnly
+                      />
+                    </div>
+
+                    <div>
+                      <Label
+                        htmlFor="address"
+                        className="text-sm font-medium text-black"
+                      >
+                        Адрес
+                      </Label>
+                      <Input
+                        id="address"
+                        type="text"
+                        value={form?.address ?? ""}
+                        onChange={(e) =>
+                          setForm((p) => ({
+                            ...(p ?? {}),
+                            address: e.target.value,
+                          }))
+                        }
+                        className="mt-1 h-10 border-gray-300 rounded-lg"
+                        placeholder="Адрес"
+                        readOnly
+                      />
+                    </div>
+
+                    {error && (
+                      <div className="text-red-500 text-sm">{error}</div>
+                    )}
+                  </div>
                 </div>
-
-                <div className="flex-1 space-y-3 md:space-y-4">
-                  <div>
-                    <label className="block text-xs md:text-sm font-medium text-black mb-1">
-                      Имя
-                    </label>
-                    <input
-                      type="text"
-                      value="Джолдаспаев Алимжан"
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white"
-                      readOnly
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs md:text-sm font-medium text-black mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value="name@mail.ru"
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white"
-                      readOnly
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs md:text-sm font-medium text-black mb-1">
-                      Телефон
-                    </label>
-                    <input
-                      type="tel"
-                      value="+7 (123) 456-78-90"
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white"
-                      readOnly
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs md:text-sm font-medium text-black mb-1">
-                      Адрес
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Телефон"
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white"
-                      readOnly
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
+              )}
+            </div>
           </Card>
         </div>
 

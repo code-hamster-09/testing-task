@@ -133,7 +133,7 @@ export default function PaymentsPage() {
                     {!payment.isPaid && (
                       <Button
                         size="sm"
-                        className="bg-black hover:bg-gray-800 text-white px-4 py-1 rounded-full text-xs"
+                        className="bg-black hover:bg-gray-800 text-white px-4 py-1 rounded-full text-xs cursor-pointer"
                       >
                         Оплатить
                       </Button>
