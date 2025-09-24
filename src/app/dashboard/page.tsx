@@ -63,7 +63,6 @@ export default function DashboardPage() {
   const [user, setUser] = useState<ApiUser | null>(null);
   const [form, setForm] = useState<Partial<ApiUser> | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -86,8 +85,8 @@ export default function DashboardPage() {
     }
 
     const id =
-      typeof parsed === "object" && parsed !== null && "id" in (parsed as any)
-        ? Number((parsed as any).id)
+      typeof parsed === "object" && parsed !== null && "id" in (parsed as ApiUser)
+        ? Number((parsed as ApiUser).id)
         : NaN;
     if (!id || Number.isNaN(id)) {
       setError("В localStorage.user нет корректного id");
@@ -113,28 +112,6 @@ export default function DashboardPage() {
       })
       .finally(() => setLoading(false));
   }, []);
-
-  const save = async () => {
-    if (!form?.id) return;
-    try {
-      const res = await fetch("/api/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j?.error ?? `HTTP ${res.status}`);
-      }
-      const j = await res.json();
-      setUser(j.data);
-      setForm(j.data);
-      setIsEditing(false);
-    } catch (e) {
-      console.error("Ошибка сохранения:", e);
-      setError(String(e?.message ?? e));
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">

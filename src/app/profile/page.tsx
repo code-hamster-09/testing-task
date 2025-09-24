@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 
+// types
 type ApiUser = {
   id: number;
   name: string;
@@ -23,6 +24,7 @@ export default function ProfilePage() {
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
+    // reading local user
     const stored = localStorage.getItem("user");
     if (!stored) {
       setError(
@@ -32,6 +34,7 @@ export default function ProfilePage() {
       return;
     }
 
+    // parse user
     let parsed: unknown = {};
     try {
       parsed = JSON.parse(stored);
@@ -41,16 +44,19 @@ export default function ProfilePage() {
       return;
     }
 
+    // get id
     const id =
-      typeof parsed === "object" && parsed !== null && "id" in (parsed as any)
-        ? Number((parsed as any).id)
+      typeof parsed === "object" && parsed !== null && "id" in (parsed as ApiUser)
+        ? Number((parsed as ApiUser).id)
         : NaN;
+    // if no id, error
     if (!id || Number.isNaN(id)) {
       setError("В localStorage.user нет корректного id");
       setLoading(false);
       return;
     }
 
+    // fetching profile
     fetch(`/api/profile?id=${id}`)
       .then(async (res) => {
         if (!res.ok) {
@@ -70,25 +76,29 @@ export default function ProfilePage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // save changes
   const save = async () => {
     if (!form?.id) return;
     try {
+      // fetch put api/profile
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      // if res not ok, error
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j?.error ?? `HTTP ${res.status}`);
       }
+      // else, set user
       const j = await res.json();
       setUser(j.data);
       setForm(j.data);
       setIsEditing(false);
     } catch (e) {
       console.error("Ошибка сохранения:", e);
-      setError(String(e?.message ?? e));
+      setError(String(e));
     }
   };
 
