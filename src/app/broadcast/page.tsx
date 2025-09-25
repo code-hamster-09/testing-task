@@ -3,8 +3,18 @@
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function BroadcastPage() {
+  const router = useRouter()
+  useEffect(() => {
+      const storedUser = localStorage.getItem("user") || null;
+      if (!storedUser) {
+        router.push("/");
+        return;
+      }
+    }, [router]);
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />

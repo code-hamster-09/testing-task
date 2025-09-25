@@ -4,6 +4,7 @@ import { Header } from "@/components/header";
 import OrdersSkeleton from "@/components/skeletons/ordersSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 // types
@@ -72,6 +73,15 @@ export default function OrdersPage() {
       console.error("Failed to repeat deal", e);
     }
   };
+
+  const router = useRouter()
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user") || null;
+        if (!storedUser) {
+          router.push("/");
+          return;
+        }
+      }, [router]);
 
   return (
     <div className="min-h-screen bg-gray-50">

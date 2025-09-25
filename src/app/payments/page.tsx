@@ -3,6 +3,8 @@
 import { Header } from "@/components/header";
 import { SelectComponent } from "@/components/selectComponent";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function PaymentsPage() {
   const payments = [
@@ -73,6 +75,15 @@ export default function PaymentsPage() {
   ];
 
   // const filteredPayments = payments.filter((payment) => {})
+
+  const router = useRouter()
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user") || null;
+        if (!storedUser) {
+          router.push("/");
+          return;
+        }
+      }, [router]);
 
   return (
     <div className="min-h-screen bg-gray-50">

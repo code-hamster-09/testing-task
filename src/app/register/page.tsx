@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface FormData {
@@ -90,6 +91,15 @@ export default function RegisterPage() {
       setIsSubmitting(false);
     }
   };
+
+  const router = useRouter()
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user") || null;
+    if (storedUser) {
+      router.push("/dashboard");
+      return;
+    }
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">

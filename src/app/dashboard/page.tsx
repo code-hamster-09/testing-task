@@ -9,6 +9,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -65,7 +66,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
 
-  
+  const router = useRouter();
+
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (!stored) {
@@ -86,7 +88,9 @@ export default function DashboardPage() {
     }
 
     const id =
-      typeof parsed === "object" && parsed !== null && "id" in (parsed as ApiUser)
+      typeof parsed === "object" &&
+      parsed !== null &&
+      "id" in (parsed as ApiUser)
         ? Number((parsed as ApiUser).id)
         : NaN;
     if (!id || Number.isNaN(id)) {
@@ -113,6 +117,14 @@ export default function DashboardPage() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user") || null;
+    if (!storedUser) {
+      router.push("/");
+      return;
+    }
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">

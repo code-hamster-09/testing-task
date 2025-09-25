@@ -5,6 +5,7 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 // types
@@ -46,7 +47,9 @@ export default function ProfilePage() {
 
     // get id
     const id =
-      typeof parsed === "object" && parsed !== null && "id" in (parsed as ApiUser)
+      typeof parsed === "object" &&
+      parsed !== null &&
+      "id" in (parsed as ApiUser)
         ? Number((parsed as ApiUser).id)
         : NaN;
     // if no id, error
@@ -101,6 +104,15 @@ export default function ProfilePage() {
       setError(String(e));
     }
   };
+
+  const router = useRouter();
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user") || null;
+    if (!storedUser) {
+      router.push("/");
+      return;
+    }
+  }, [router]);
 
   if (loading) return <div className="p-6">Загрузка...</div>;
   if (!user)
