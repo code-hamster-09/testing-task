@@ -69,14 +69,10 @@ export function Header() {
           <Link href="/dashboard" className="text-lg font-bold text-black">
             ЛОГОТИП
           </Link>
-          {/* <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </Button> */}
+          <Button className="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white" onClick={() => {
+            localStorage.removeItem("user")
+            window.location.href = "/"
+          }}>Log out</Button>
         </div>
 
         {/* Mobile Menu Overlay */}
