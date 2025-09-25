@@ -1,7 +1,6 @@
 "use client";
 
 import { Header } from "@/components/header";
-import { SelectComponent } from "@/components/selectComponent";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -76,14 +75,14 @@ export default function PaymentsPage() {
 
   // const filteredPayments = payments.filter((payment) => {})
 
-  const router = useRouter()
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user") || null;
-        if (!storedUser) {
-          router.push("/");
-          return;
-        }
-      }, [router]);
+  const router = useRouter();
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user") || null;
+    if (!storedUser) {
+      router.push("/");
+      return;
+    }
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,7 +93,6 @@ export default function PaymentsPage() {
           <h1 className="text-2xl md:text-3xl font-bold text-black mb-8">
             Платежи
           </h1>
-          <SelectComponent />
         </div>
 
         {/* Desktop Table */}
@@ -128,13 +126,13 @@ export default function PaymentsPage() {
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {payment.date}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm text-gray-900 font-medium">
                     {payment.amount}
                   </td>
                   <td className="px-6 py-4 text-sm">
                     <span
                       className={`${
-                        payment.isPaid ? "text-blue-400" : "text-gray-900"
+                        payment.isPaid ? "text-blue-300" : "text-black"
                       }`}
                     >
                       {payment.status}
@@ -182,13 +180,15 @@ export default function PaymentsPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm font-medium text-blue-600">Сумма</p>
-                    <p className="text-sm text-gray-900">{payment.amount}</p>
+                    <p className="text-md text-gray-900 font-medium">
+                      {payment.amount}
+                    </p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-blue-600">Статус</p>
                     <p
-                      className={`text-sm ${
-                        payment.isPaid ? "text-blue-400" : "text-gray-900"
+                      className={`text-md ${
+                        payment.isPaid ? "text-blue-300" : "text-black"
                       }`}
                     >
                       {payment.status}
