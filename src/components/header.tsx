@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 const navigation = [
   { name: "Дашборд", href: "/dashboard", icon: LayoutDashboard },
@@ -55,6 +56,10 @@ export function Header() {
               );
             })}
           </div>
+          <Button className="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white" onClick={() => {
+            localStorage.removeItem("user")
+            window.location.href = "/"
+          }}>Log out</Button>
         </div>
       </nav>
 

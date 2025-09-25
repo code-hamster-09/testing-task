@@ -65,6 +65,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
 
+  
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (!stored) {
