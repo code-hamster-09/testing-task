@@ -1,4 +1,3 @@
-// src/app/login/page.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -37,6 +36,7 @@ export default function LoginPage() {
         );
       } else {
         // сохраняем минимальный объект пользователя в localStorage
+        console.log(JSON.stringify(data.user))
         localStorage.setItem("user", JSON.stringify(data.user));
         router.push("/dashboard");
       }

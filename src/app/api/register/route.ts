@@ -1,5 +1,4 @@
-// src/app/api/register/route.ts
-import { createContact } from "@/lib/bitrix"; // предполагается серверный модуль, использующий process.env.BITRIX_WEBHOOK_URL
+import { createContact } from "@/lib/bitrix";
 import db from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
