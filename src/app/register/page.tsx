@@ -78,6 +78,7 @@ export default function RegisterPage() {
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         // redirect
+        localStorage.setItem("user", JSON.stringify(data.user))
         window.location.href = "/dashboard";
       } else {
         setErrors((data?.errors as FormErrors) || { email: "Ошибка регистрации" });

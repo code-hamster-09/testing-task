@@ -1,4 +1,4 @@
-const WEBHOOK_URL = process.env.NEXT_PUBLIC_BITRIX_WEBHOOK_URL;
+const WEBHOOK_URL = process.env.BITRIX_WEBHOOK_URL;
 
 if (!WEBHOOK_URL) {
   console.warn("BITRIX_WEBHOOK_URL not set");
