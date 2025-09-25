@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CRM Dashboard with Bitrix24 Integration
 
-## Getting Started
+Проект представляет собой трехстраничное веб-приложение с интеграцией Bitrix24, построенное на Next.js с TypeScript.
 
-First, run the development server:
+## 🚀 Функциональность
 
+### ✅ Реализованные требования
+- **Регистрация/Авторизация**
+  - Создание контакта в Bitrix24 при регистрации
+  - Хеширование паролей (bcryptjs)
+  - Валидация форм (пароль: мин. 6 символов, заглавная буква, цифра)
+  - Отображение ошибок валидации
+  - Блокировка кнопок при невалидной форме
+  - Редирект на дашборд после успешного входа
+
+- **Дашборд**
+  - Слайдер заказов с Swiper (6-10 карточек)
+  - Профиль пользователя с данными из БД
+  - Блок трансляции (верстка)
+  - Таблица платежей с фильтрацией
+
+- **Страница заказов**
+  - Интеграция с Bitrix24 CRM
+  - Отображение сделок из Bitrix24
+  - Создание новых сделок при нажатии "Повторить заказ"
+  - Отображение даты создания и статуса сделок
+
+- **Дополнительные функции**
+  - Защита маршрутов и редиректы
+  - Система выхода (logout)
+  - Адаптивный дизайн
+  - Чистая архитектура кода
+
+## 🛠 Технологический стек
+
+- **Frontend**: Next.js 14, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: Better-sqlite3
+- **UI Components**: Shadcn/ui, Lucide React
+- **Slider**: Swiper
+- **Authentication**: bcryptjs
+- **CRM Integration**: Bitrix24 REST API
+
+**Веб Приложение уже задеплоено на Vercel**
+**Ссылка на демо:** https://testing-task-rho.vercel.app
+**ВАЖНО**: Чтобы увидеть сделки в старнице ЗАКАЗОВ войдите в приложение с:
+            email: sagilanmutalif9@gmail.com
+            password: Mutalif&Sagilan1
+
+## 📦 **Установка и запуск**
+
+### Предварительные требования
+- Node.js 18+ 
+- Аккаунт Bitrix24 с демо-доступом
+
+### 1. Клонирование репозитория
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/code-hamster-09/testing-task
+cd testing-task
 ```
+2. Настройка окружения
+Замените содержимое в файле .env.local:
+BITRIX_WEBHOOK_URL=https://your-domain.bitrix24.ru/rest/1/your-webhook-token/
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Инициализация базы данных
+База данных инициализируется автоматически при первом запуске.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+5. Запуск приложения
+npm run dev
+Приложение будет доступно по адресу: http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+🔌 **API Endpoints**
+**Authentication**
+POST /api/register - Регистрация пользователя
+POST /api/login - Авторизация пользователя
+POST /api/logout - Выход из системы
 
-To learn more about Next.js, take a look at the following resources:
+**User Management**
+GET /api/profile?id={id} - Получение профиля пользователя
+PUT /api/profile - Обновление профиля
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Bitrix24 Integration
+GET /api/bitrix/deals - Получение списка сделок
+POST /api/bitrix/deals - Создание новой сделки
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+🔒 **Безопасность**
+Пароли хешируются с помощью bcryptjs
+Валидация входных данных на клиенте и сервере
+Защищенные маршруты с проверкой аутентификации
 
-## Deploy on Vercel
+📱 **Адаптивность**
+Приложение полностью адаптировано для:
+Десктопных устройств (1024px+)
+Планшетов (768px - 1023px)
+Мобильных устройств (320px - 767px)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+🔄 **Bitrix24 Integration**
+Настройка вебхука
+Войдите в Bitrix24
+Перейдите: Приложения → Разработчикам → Другое → Входящий вебхук
+Активируйте демо-тариф
+Скопируйте URL вебхука в .env.local
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Функциональность**
+Создание контактов при регистрации пользователей
+Чтение сделок для отображения на странице заказов
+Создание сделок при повторении заказа
