@@ -41,9 +41,9 @@
 - **Authentication**: bcryptjs
 - **CRM Integration**: Bitrix24 REST API
 
-**Веб Приложение уже задеплоено на Vercel**
-**Ссылка на демо:** https://testing-task-rho.vercel.app
-**ВАЖНО**: Чтобы увидеть сделки в старнице ЗАКАЗОВ войдите в приложение с:
+## **Веб Приложение уже задеплоено на Vercel**
+## **Ссылка на демо:** https://testing-task-rho.vercel.app
+## **ВАЖНО**: Чтобы увидеть сделки в старнице ЗАКАЗОВ войдите в приложение с:
             email: sagilanmutalif9@gmail.com
             password: Mutalif&Sagilan1
 
